@@ -21,40 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      # - name: Load SPN Secret to ENV
-      #   run: echo "${{ secrets.SPN2 }}" >> $GITHUB_ENV
-
       - name: Azure Login
-        uses: azure/login@v2
+        uses: Azure/login@v2.3.0
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}"
-            }
-
-
-      # - name: Azure Login
-      #   run: |
-      #     az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
-      #     az account set -s "$ARM_SUBSCRIPTION_ID"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3  # installs terraform ✔
 
       - name: Terraform Init
         run: terraform init -input=false -no-color
+        working-directory: env/dev
 
       - name: Terraform Plan
         run: terraform plan -input=false -no-color -out=tfplan.binary
+        working-directory: env/dev
 
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v6
-        with:
-          name: tfplan
-          path: tfplan.binary
 
   deploy:
     name: Terraform Apply + Save State
@@ -65,46 +47,24 @@ jobs:
     environment: approve-deploy
     
     steps:
+
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Download Plan Artifact
-        uses: actions/download-artifact@v6
-        with:
-          name: tfplan
-          path: ./
-
-      # - name: Load SPN Secret to ENV
-      #   run: echo "${{ secrets.SPN }}" >> $GITHUB_ENV
-
-      # - name: Azure Login
-      #   run: |
-      #     az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
-      #     az account set -s "$ARM_SUBSCRIPTION_ID"
-
       - name: Azure Login
-        uses: azure/login@v2
+        uses: Azure/login@v2.3.0
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}"
-            }
-
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3  # installs terraform ✔
 
       - name: Terraform Init
         run: terraform init -input=false -no-color
+        working-directory: env/dev
 
       - name: Terraform Apply using Plan
         run: terraform apply -input=false -auto-approve -no-color tfplan.binary
+        working-directory: env/dev
 
-      - name: Upload Terraform State
-        uses: actions/upload-artifact@v6
-        with:
-          name: tfstate
-          path: terraform.tfstate
+      
