@@ -31,11 +31,11 @@ jobs:
 
       - name: Terraform Init
         run: terraform init 
-        working-directory: env/dev
+        working-directory: env/${{ github.event.inputs.environment }}
 
       - name: Terraform Plan
         run: terraform plan 
-        working-directory: env/dev
+        working-directory: env/${{ github.event.inputs.environment }}
 
 
   deploy:
@@ -61,10 +61,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init 
-        working-directory: env/dev
-
+        working-directory: env/${{ github.event.inputs.environment }}
+        
       - name: Terraform Apply using Plan
         run: terraform apply -auto-approve 
-        working-directory: env/dev
-
+        working-directory: env/${{ github.event.inputs.environment }}
       
