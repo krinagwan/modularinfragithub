@@ -30,11 +30,11 @@ jobs:
         uses: hashicorp/setup-terraform@v3  # installs terraform ✔
 
       - name: Terraform Init
-        run: terraform init -input=false -no-color
+        run: terraform init 
         working-directory: env/dev
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color -out=tfplan.binary
+        run: terraform plan 
         working-directory: env/dev
 
 
@@ -60,11 +60,11 @@ jobs:
         uses: hashicorp/setup-terraform@v3  # installs terraform ✔
 
       - name: Terraform Init
-        run: terraform init -input=false -no-color
+        run: terraform init 
         working-directory: env/dev
 
       - name: Terraform Apply using Plan
-        run: terraform apply -input=false -auto-approve -no-color tfplan.binary
+        run: terraform apply -auto-approve 
         working-directory: env/dev
 
       
