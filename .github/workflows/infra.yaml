@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Terraform Init Plan
+    name: "${{ github.event.inputs.environment }} - Terraform Init & Plan"
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +39,7 @@ jobs:
 
 
   deploy:
-    name: Terraform Apply + Save State
+    name: "${{ github.event.inputs.environment }} - Terraform Apply"
     runs-on: ubuntu-latest
     needs: build
     
